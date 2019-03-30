@@ -8,6 +8,12 @@ void yyerror(char *);
 %}
 
 
+LETTER   [a-zA-Z0-9]
+NUM  [0-9]
+
+WORD  {LETTER}+
+INTERGER  {NUM}+
+
 %%
 
 true     {
@@ -34,12 +40,12 @@ NULL     {
           return NULO;
         }
 
-[0-9]+  {
-          yylval = atoi(yytext);
+{INTERGER}+([.]{INTERGER}+)?  {
+          yylval = atof(yytext);
           return NUMBER;
         }
 
-[a-zA-Z]+ {
+["]{WORD}([ ]{WORD})*["] {
           return WORD;
         }
 
@@ -51,8 +57,12 @@ NULL     {
           return CLOSE_CURLYB;
         }
 
-["]     {
-          return QUOTATION_MARKS;
+\[     {
+          return OPEN_SQUAREDB;
+        }
+
+\]     {
+          return CLOSE_SQUAREDB;
         }
 
 [:]     {
@@ -63,13 +73,11 @@ NULL     {
           return COMMA;
         }
 
-[\0]     {
-          return END_OF_FILE;
-        }
+[\n] ;
 
 [ \t]+ ;
 
-.     {yyerror("Token nao reconhecido!\n");}
+.
 
 
 %%

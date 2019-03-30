@@ -5,33 +5,25 @@ void yyerror(char *c);
 int yylex(void);
 %}
 
-%token OPEN_CURLYB CLOSE_CURLYB NUMBER TRUE FALSE NULO ARRAY DOUBLE_DOT COMMA QUOTATION_MARKS WORD END_OF_FILE
+%token OPEN_CURLYB CLOSE_CURLYB NUMBER TRUE FALSE NULO DOUBLE_DOT COMMA WORD END_OF_FILE OPEN_SQUAREDB CLOSE_SQUAREDB
 
 %start SOFTWARE
 
 %%
 
 SOFTWARE:
-    SOFTWARE JSON END_OF_FILE { printf("VALIDO\n"); }
-    | JSON { printf("INVALIDO\n"); }
+    SOFTWARE JSON { printf("VALIDO\n"); }
+    |
     ;
 
 JSON:
-    OPEN_CURLYB ITEM CLOSE_CURLYB { printf("JSON found\n"); }
-    ;
-
-STRING:
-    QUOTATION_MARKS WORD QUOTATION_MARKS { printf("Achei um string!\n"); }
+    OPEN_CURLYB ITEM CLOSE_CURLYB
     ;
 
 VALUE:
-    STRING {
-    printf("Achei um string!\n");
-    }
+    WORD
 
-    | NUMBER {
-    printf("NUMBER found!\n");
-    }
+    | NUMBER
 
     | JSON
 
@@ -45,15 +37,24 @@ VALUE:
     ;
 
 ITEM:
-    STRING DOUBLE_DOT VALUE { printf("ITEM found\n"); }
+    WORD DOUBLE_DOT VALUE
     
     | ITEM COMMA ITEM
     ;
 
+ARRAY:
+    OPEN_SQUAREDB ARRAY_VALUE CLOSE_SQUAREDB
+    | OPEN_SQUAREDB CLOSE_SQUAREDB
+    ;
+
+ARRAY_VALUE:
+    VALUE
+    | ARRAY_VALUE COMMA ARRAY_VALUE
+    ;
 %%
 
 void yyerror(char *s) {
-    fprintf(stderr, "%s\n", s);
+    printf("INVALIDO\n");
 }
 
 int main() {
